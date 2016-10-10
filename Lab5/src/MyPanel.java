@@ -9,14 +9,15 @@ public class MyPanel extends JPanel {
 	private static final long serialVersionUID = 3426940946811133635L;
 	private static final int GRID_X = 25;
 	private static final int GRID_Y = 25;
-	private static final int INNER_CELL_SIZE = 29;
-	private static final int TOTAL_COLUMNS = 9;
-	private static final int TOTAL_ROWS = 9;   //Last row has only one cell
+	private static final int INNER_CELL_SIZE = 35;  //tamaño de cuadrados
+	private static final int TOTAL_COLUMNS = 20;
+	private static final int TOTAL_ROWS = 20;   //Last row has only one cell
 	public int x = -1;
 	public int y = -1;
 	public int mouseDownGridX = 0;
 	public int mouseDownGridY = 0;
 	public Color[][] colorArray = new Color[TOTAL_COLUMNS][TOTAL_ROWS];
+	
 	public MyPanel() {   //This is the constructor... this code runs first to initialize
 		if (INNER_CELL_SIZE + (new Random()).nextInt(1) < 1) {	//Use of "random" to prevent unwanted Eclipse warning
 			throw new RuntimeException("INNER_CELL_SIZE must be positive!");
@@ -46,15 +47,19 @@ public class MyPanel extends JPanel {
 		Insets myInsets = getInsets();
 		int x1 = myInsets.left;
 		int y1 = myInsets.top;
-		int x2 = getWidth() - myInsets.right - 1;
-		int y2 = getHeight() - myInsets.bottom - 1;
+		int x2 = getWidth() - myInsets.right -1 ;
+		int y2 = getHeight() - myInsets.bottom-1;
 		int width = x2 - x1;
 		int height = y2 - y1;
 
 		//Paint the background
-		g.setColor(Color.LIGHT_GRAY);
-		g.fillRect(x1, y1, width + 1, height + 1);
-
+		g.setColor(Color.GRAY);
+		g.fillRect(x1, y1, width +1, height + 1);
+		g.setColor(Color.ORANGE);
+		g.fillRect(x1+9, y1+9, x1+10, y2-15);
+		g.fillRect(x2-26, y1+9, x2-26, y2-15);
+		g.setColor(Color.GRAY);
+		g.fillRect(x2-15, y1, width , height + 1);
 		//Draw the grid minus the bottom row (which has only one cell)
 		//By default, the grid will be 10x10 (see above: TOTAL_COLUMNS and TOTAL_ROWS) 
 		g.setColor(Color.BLACK);
