@@ -3,12 +3,12 @@ import java.awt.Component;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Random;
 
 import javax.swing.JFrame;
 
 public class MyMouseAdapter extends MouseAdapter {
-	private Random generator = new Random();
+	int bombCount = 0;
+	
 	public void mousePressed(MouseEvent e) {
 		switch (e.getButton())
 		{
@@ -53,7 +53,7 @@ public class MyMouseAdapter extends MouseAdapter {
 			}
 			
 			//variable to hold game status. Default "false"
-			boolean lost = false;
+			//boolean lost = false;
 			
 			JFrame myFrame = (JFrame)c;
 			MyPanel myPanel = (MyPanel) myFrame.getContentPane().getComponent(0);  //Can also loop among components to find MyPanel
@@ -68,33 +68,7 @@ public class MyMouseAdapter extends MouseAdapter {
 			int gridX = myPanel.getGridX(x, y);
 			int gridY = myPanel.getGridY(x, y);
 			if ((myPanel.mouseDownGridX == -1) || (myPanel.mouseDownGridY == -1)) {
-				for(int i = 0; i < 9; i++){
-					for (int j = 0; j < 9; j++){
-						Color newColor = null;
-						switch (generator.nextInt(3)) {
-						case 0:
-							newColor = Color.BLUE;
-							if (myPanel.colorArray[i][j].equals(newColor)){
-								break;
-							}
-							break;
-						case 1:
-							newColor = Color.RED;
-							if (myPanel.colorArray[i][j].equals(newColor)){
-								break;
-							}
-							break;
-						case 2:
-							newColor = Color.GREEN;
-							if (myPanel.colorArray[i][j].equals(newColor)){
-								break;
-							}
-							break;
-						}
-						myPanel.colorArray[i][j] = newColor;
-						myPanel.repaint();
-					}
-				}
+				//Outside frame, do nothing..
 			} else {
 				if ((gridX == -1) || (gridY == -1)) {
 					//Is releasing outside
@@ -105,40 +79,24 @@ public class MyMouseAdapter extends MouseAdapter {
 						//Do nothing
 					} else {
 						//Released the mouse button on the same cell where it was pressed
-							Color newColor = null;
-							switch (generator.nextInt(5)) {
-							case 0:
-								newColor = Color.YELLOW;
-								if (myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(newColor)){
-									break;
+							bombCount = 0;
+							
+							//Determine bomb amount around pressed cell
+							for (int xCoord = Math.abs(myPanel.mouseDownGridX - 1); xCoord < (myPanel.mouseDownGridX + 2); xCoord++) {
+								for (int yCoord = Math.abs(myPanel.mouseDownGridY - 1); yCoord < (myPanel.mouseDownGridY + 2); yCoord++) {
+									if (myPanel.bombArray[xCoord][yCoord] == 1) {
+										myPanel.colorArray[xCoord][yCoord] = Color.RED;
+										bombCount++;
+									} else {
+										myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
+									}
 								}
-								break;
-							case 1:
-								newColor = Color.MAGENTA;
-								if (myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(newColor)){
-									break;
-								}
-								break;
-							case 2:
-								newColor = Color.BLACK;
-								if (myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(newColor)){
-									break;
-								}
-								break;
-							case 3:
-								newColor = new Color(0x964B00);   //Brown (from http://simple.wikipedia.org/wiki/List_of_colors)
-								if (myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(newColor)){
-									break;
-								}
-								break;
-							case 4:
-								newColor = new Color(0xB57EDC);   //Lavender (from http://simple.wikipedia.org/wiki/List_of_colors)
-								if (myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(newColor)){
-									break;
-								}
-								break;
 							}
-							myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = newColor;
+							myPanel.numberArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = bombCount;
+							System.out.println("tile bomb number: " + myPanel.numberArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY]);
+							System.out.println(bombCount);
+							System.out.println("Bomb? " + myPanel.bombArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY]);
+							
 							myPanel.repaint();
 					}
 				}

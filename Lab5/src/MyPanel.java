@@ -9,16 +9,23 @@ public class MyPanel extends JPanel {
 	private static final long serialVersionUID = 3426940946811133635L;
 	private static final int GRID_X = 25;
 	private static final int GRID_Y = 25;
-	private static final int INNER_CELL_SIZE = 35;  //tamaño de cuadrados
-	private static final int TOTAL_COLUMNS = 20;
-	private static final int TOTAL_ROWS = 20;   //Last row has only one cell
+	private static final int INNER_CELL_SIZE = 29;
+	private static final int TOTAL_COLUMNS = 9;
+	private static final int TOTAL_ROWS = 9;
 	public int x = -1;
 	public int y = -1;
 	public int mouseDownGridX = 0;
 	public int mouseDownGridY = 0;
 	public Color[][] colorArray = new Color[TOTAL_COLUMNS][TOTAL_ROWS];
 	
+	//Array to hold game arrays numbers
+	public int[][] numberArray = new int[TOTAL_COLUMNS][TOTAL_ROWS];
+	public int[][] bombArray = new int[TOTAL_COLUMNS][TOTAL_ROWS];
+	
 	public MyPanel() {   //This is the constructor... this code runs first to initialize
+		
+		Random gen = new Random();
+		
 		if (INNER_CELL_SIZE + (new Random()).nextInt(1) < 1) {	//Use of "random" to prevent unwanted Eclipse warning
 			throw new RuntimeException("INNER_CELL_SIZE must be positive!");
 		}
@@ -28,15 +35,16 @@ public class MyPanel extends JPanel {
 		if (TOTAL_ROWS + (new Random()).nextInt(1) < 3) {	//Use of "random" to prevent unwanted Eclipse warning
 			throw new RuntimeException("TOTAL_ROWS must be at least 3!");
 		}
-		/*for (int x = 0; x < TOTAL_COLUMNS; x++) {   //Top row
-			colorArray[x][0] = Color.LIGHT_GRAY;
-		}*/
-		/*for (int y = 0; y < TOTAL_ROWS; y++) {   //Left column
-			colorArray[0][y] = Color.LIGHT_GRAY;
-		}*/
 		for (int x = 0; x < TOTAL_COLUMNS; x++) {   //The rest of the grid
 			for (int y = 0; y < TOTAL_ROWS; y++) {
-				colorArray[x][y] = Color.WHITE;
+				//numberArray[x][y] = gen.nextInt(3);
+				bombArray[x][y] = gen.nextInt(2);
+				if (bombArray[x][y] == 1){
+					colorArray[x][y] = Color.BLACK;
+				} else {
+					colorArray[x][y] = Color.WHITE;
+				}
+				
 			}
 		}
 	}
@@ -48,20 +56,23 @@ public class MyPanel extends JPanel {
 		int x1 = myInsets.left;
 		int y1 = myInsets.top;
 		int x2 = getWidth() - myInsets.right -1 ;
-		int y2 = getHeight() - myInsets.bottom-1;
+		int y2 = getHeight() - myInsets.bottom - 1;
 		int width = x2 - x1;
 		int height = y2 - y1;
 
 		//Paint the background
-		g.setColor(Color.GRAY);
+		g.setColor(Color.LIGHT_GRAY);
 		g.fillRect(x1, y1, width +1, height + 1);
+		
+		/* TODO Fix orange panels on the side
 		g.setColor(Color.ORANGE);
-		g.fillRect(x1+9, y1+9, x1+10, y2-15);
-		g.fillRect(x2-26, y1+9, x2-26, y2-15);
-		g.setColor(Color.GRAY);
-		g.fillRect(x2-15, y1, width , height + 1);
-		//Draw the grid minus the bottom row (which has only one cell)
-		//By default, the grid will be 10x10 (see above: TOTAL_COLUMNS and TOTAL_ROWS) 
+		//g.fillRect(x1+9, y1+9, x1+10, y2-15);
+		//g.fillRect(x2-26, y1+9, x2-26, y2-15);
+		//g.setColor(Color.GRAY);
+		//g.fillRect(x2-15, y1, width , height + 1);
+		*/
+		
+		//Draw the grid
 		g.setColor(Color.BLACK);
 		for (int y = 0; y <= TOTAL_ROWS; y++) {
 			g.drawLine(x1 + GRID_X, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)), x1 + GRID_X + ((INNER_CELL_SIZE + 1) * TOTAL_COLUMNS), y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)));
@@ -98,10 +109,8 @@ public class MyPanel extends JPanel {
 		}
 		x = x / (INNER_CELL_SIZE + 1);
 		y = y / (INNER_CELL_SIZE + 1);
-		/*if (x == 0 && y == TOTAL_ROWS - 1) {    //The lower left extra cell
-			return x;
-		}*/
-		if (x < 0 || x > TOTAL_COLUMNS || y < 0 || y > TOTAL_ROWS) {   //Outside the rest of the grid
+
+		if (x < 0 || x > TOTAL_COLUMNS - 1 || y < 0 || y > TOTAL_ROWS -1) {   //Outside the rest of the grid
 			return -1;
 		}
 		return x;
@@ -123,10 +132,8 @@ public class MyPanel extends JPanel {
 		}
 		x = x / (INNER_CELL_SIZE + 1);
 		y = y / (INNER_CELL_SIZE + 1);
-		if (x == 0 && y == TOTAL_ROWS) {    //The lower left extra cell
-			return y;
-		}
-		if (x < 0 || x > TOTAL_COLUMNS || y < 0 || y > TOTAL_ROWS ) {   //Outside the rest of the grid
+		
+		if (x < 0 || x > TOTAL_COLUMNS - 1 || y < 0 || y > TOTAL_ROWS - 1 ) {   //Outside the rest of the grid
 			return -1;
 		}
 		return y;
