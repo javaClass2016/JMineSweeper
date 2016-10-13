@@ -21,10 +21,137 @@ public class MyPanel extends JPanel {
 	//Array to hold game arrays numbers
 	public int[][] numberArray = new int[TOTAL_COLUMNS][TOTAL_ROWS];
 	public int[][] bombArray = new int[TOTAL_COLUMNS][TOTAL_ROWS];
+	public int bombCount;
+
+	//variable to hold game statuses
+	public boolean lost = false;
+	public boolean playing = false;
+
+	public void recursiveSearch(int x ,int y) {
+		if (x < 0 || x > numberArray.length || y < 0 || y > numberArray.length) {
+			return; //Check for borders in order to avoid OutOfIndex or StackOverflow errors
+		} else {
+			int xMin = Math.max(x - 1, 0);
+			int xMax = Math.min(x + 1, numberArray.length - 1);
+			int yMin = Math.max(y - 1, 0);
+			int yMax = Math.min(y + 1, numberArray[x].length - 1);
+
+			if ( numberArray[x][y] != -1 && colorArray[x][y].equals(Color.WHITE) && numberArray[x][y] <= 1) {
+				colorArray[x][y] = Color.GRAY;
+				recursiveSearch(xMax,y);
+				recursiveSearch(xMin,y);
+				recursiveSearch(x,yMax);
+				recursiveSearch(x,yMin);
+			} else {
+				return;
+			}
+		}
+	}
+
+	public void setNumberArray() {
+
+		for (int x = 0; x < numberArray.length; x++){
+			for (int y = 0; y < numberArray[x].length; y++){
+				bombCount = 0;
+				if (x == 0 && y == 8) {
+					//bottom left cell
+					for (int xCoord = x; xCoord <= (x + 2); xCoord++) {
+						for (int yCoord = y - 2; yCoord <= (y); yCoord++) {
+							if (bombArray[xCoord][yCoord] == 1) {
+								bombCount++;
+								numberArray[xCoord][yCoord] = -1;
+							}
+						}
+					}
+				} else if (x == 8 && y == 8) {
+					//bottom right cell
+					for (int xCoord = x - 2; xCoord <= (x); xCoord++) {
+						for (int yCoord = y - 2; yCoord <= (y); yCoord++) {
+							if (bombArray[xCoord][yCoord] == 1) {
+								bombCount++;
+								numberArray[xCoord][yCoord] = -1;
+							}
+						}
+					}
+				} else if (x == 8 && y == 0) {
+					//top right cell
+					for (int xCoord = (x - 2); xCoord <= (x); xCoord++) {
+						for (int yCoord = y; yCoord <= (y + 2); yCoord++) {
+							if (bombArray[xCoord][yCoord] == 1) {
+								bombCount++;
+								numberArray[xCoord][yCoord] = -1;
+							}
+						}
+					}
+				} else if (x == 0 && y == 0) {
+					//top left cell
+					for (int xCoord = x; xCoord <= (x + 2); xCoord++) {
+						for (int yCoord = y; yCoord <= (y + 2); yCoord++) {
+							if (bombArray[xCoord][yCoord] == 1) {
+								bombCount++;
+								numberArray[xCoord][yCoord] = -1;
+							}
+						}
+					}
+				}
+				else if (x == 8) {
+					//cells from [8, 1] to [8, 7] (right border)
+					for (int xCoord = x - 2; xCoord <= (x); xCoord++) {
+						for (int yCoord = y - 1; yCoord <= (y + 1); yCoord++) {
+							if (bombArray[xCoord][yCoord] == 1) {
+								bombCount++;
+								numberArray[xCoord][yCoord] = -1;
+							}
+						}
+					}
+				} else if (y == 8) {
+					//cells from [1, 8] to [7, 8] (bottom border)
+					for (int xCoord = x - 1; xCoord <= (x + 1); xCoord++) {
+						for (int yCoord = (y - 2); yCoord <= (y); yCoord++) {
+							if (bombArray[xCoord][yCoord] == 1) {
+								bombCount++;
+								numberArray[xCoord][yCoord] = -1;
+							}
+						}
+					}
+				} else if (x == 0) {
+					//cells from [0, 1] to [0, 7] (left border)
+					for (int xCoord = x; xCoord <= (x + 2); xCoord++) {
+						for (int yCoord = (y -1); yCoord <= (y + 1); yCoord++) {
+							if (bombArray[xCoord][yCoord] == 1) {
+								bombCount++;
+								numberArray[xCoord][yCoord] = -1;
+							}
+						}
+					}
+				} else if (y == 0) {
+					//cells from [1, 0] to [7, 0] (right border)
+					for (int xCoord = (x - 1); xCoord <= (x + 1); xCoord++) {
+						for (int yCoord = (y); yCoord <= (y + 2); yCoord++) {
+							if (bombArray[xCoord][yCoord] == 1) {
+								bombCount++;
+								numberArray[xCoord][yCoord] = -1;
+							}
+						}
+					}
+				}else {
+					//every other cell inside the grid
+					for (int xCoord = (x - 1); xCoord <= (x + 1); xCoord++) {
+						for (int yCoord = (y - 1); yCoord <= (y + 1); yCoord++) {
+							if (bombArray[xCoord][yCoord] == 1) {
+								bombCount++;
+								numberArray[xCoord][yCoord] = -1;
+							}
+						}
+					}
+
+				}
+				numberArray[x][y] = bombCount;
+			}
+		}
+	}
 
 	public MyPanel() {   //This is the constructor... this code runs first to initialize
-
-		Random gen = new Random();
 
 		if (INNER_CELL_SIZE + (new Random()).nextInt(1) < 1) {	//Use of "random" to prevent unwanted Eclipse warning
 			throw new RuntimeException("INNER_CELL_SIZE must be positive!");
@@ -37,7 +164,6 @@ public class MyPanel extends JPanel {
 		}
 		for (int x = 0; x < TOTAL_COLUMNS; x++) {   //The rest of the grid
 			for (int y = 0; y < TOTAL_ROWS; y++) {
-				bombArray[x][y] = gen.nextInt(4);
 				colorArray[x][y] = Color.WHITE;
 			}
 		}
@@ -58,14 +184,6 @@ public class MyPanel extends JPanel {
 		g.setColor(Color.LIGHT_GRAY);
 		g.fillRect(x1, y1, width +1, height + 1);
 
-		/* TODO Fix orange panels on the side
-		g.setColor(Color.ORANGE);
-		//g.fillRect(x1+9, y1+9, x1+10, y2-15);
-		//g.fillRect(x2-26, y1+9, x2-26, y2-15);
-		//g.setColor(Color.GRAY);
-		//g.fillRect(x2-15, y1, width , height + 1);
-		 */
-
 		//Draw the grid
 		g.setColor(Color.BLACK);
 		for (int y = 0; y <= TOTAL_ROWS; y++) {
@@ -82,12 +200,26 @@ public class MyPanel extends JPanel {
 					Color c = colorArray[x][y];
 					g.setColor(c);
 					g.fillRect(x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 1, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 1, INNER_CELL_SIZE, INNER_CELL_SIZE);
+					if (lost) {
+						if (bombArray[x][y] == 1){
+							g.setColor(Color.BLACK);
+							g.fillRect(x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 1, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 1, INNER_CELL_SIZE, INNER_CELL_SIZE);
+						} else {
+							g.setColor(Color.WHITE);
+							g.drawString(numberArray[x][y]+"", x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 11, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 20);
+						}
+					} else {
+						if (numberArray[x][y] == 0) {
+							g.setColor(Color.WHITE);
+							g.drawString("", x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 11, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 20);
+						}
+						else {
+							g.setColor(Color.WHITE);
+							g.drawString(numberArray[x][y]+"", x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 11, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 20);
+						}
 
-					if (bombArray[x][y] != 1 && !colorArray[x][y].equals(Color.RED)) {
-						g.setColor(Color.WHITE);
-						g.drawString(numberArray[x][y]+"", x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 11, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 20);
 					}
-					
+
 				}
 			}
 		}
