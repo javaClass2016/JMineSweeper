@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 
 public class MyMouseAdapter extends MouseAdapter {
 	int bombCount = 0;
-	
+
 	public void mousePressed(MouseEvent e) {
 		switch (e.getButton())
 		{
@@ -34,7 +34,26 @@ public class MyMouseAdapter extends MouseAdapter {
 			myPanel.repaint();
 			break;
 		case 3:		//Right mouse button
-			//Do nothing
+			c = e.getComponent();
+			while (!(c instanceof JFrame)) {
+				c = c.getParent();
+				if (c == null) {
+					return;
+				}
+			}
+			myFrame = (JFrame)c;
+			myPanel = (MyPanel) myFrame.getContentPane().getComponent(0);  //Can also loop among components to find MyPanel
+			myInsets = myFrame.getInsets();
+			x1 = myInsets.left;
+			y1 = myInsets.top;
+			e.translatePoint(-x1, -y1);
+			x = e.getX();
+			y = e.getY();
+			myPanel.x = x;
+			myPanel.y = y;
+			myPanel.mouseDownGridX = myPanel.getGridX(x, y);
+			myPanel.mouseDownGridY = myPanel.getGridY(x, y);
+			myPanel.repaint();
 			break;
 		default:    //Some other button (2 = Middle mouse button, etc.)
 			//Do nothing
@@ -51,10 +70,6 @@ public class MyMouseAdapter extends MouseAdapter {
 					return;
 				}
 			}
-			
-			//variable to hold game status. Default "false"
-			//boolean lost = false;
-			
 			JFrame myFrame = (JFrame)c;
 			MyPanel myPanel = (MyPanel) myFrame.getContentPane().getComponent(0);  //Can also loop among components to find MyPanel
 			Insets myInsets = myFrame.getInsets();
@@ -79,32 +94,59 @@ public class MyMouseAdapter extends MouseAdapter {
 						//Do nothing
 					} else {
 						//Released the mouse button on the same cell where it was pressed
-							bombCount = 0;
-							
+						bombCount = 0;
+
+						if (myPanel.bombArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] == 1) {
+							System.out.println("Touched bomb. Game over!");
+							myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.BLACK;
+						} else {
 							//Determine bomb amount around pressed cell
 							for (int xCoord = Math.abs(myPanel.mouseDownGridX - 1); xCoord < (myPanel.mouseDownGridX + 2); xCoord++) {
 								for (int yCoord = Math.abs(myPanel.mouseDownGridY - 1); yCoord < (myPanel.mouseDownGridY + 2); yCoord++) {
 									if (myPanel.bombArray[xCoord][yCoord] == 1) {
-										myPanel.colorArray[xCoord][yCoord] = Color.RED;
 										bombCount++;
 									} else {
 										myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
 									}
 								}
 							}
-							myPanel.numberArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = bombCount;
-							System.out.println("tile bomb number: " + myPanel.numberArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY]);
+						}
+
+						myPanel.numberArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = bombCount;
+						myPanel.repaint();
+						/*System.out.println("tile bomb number: " + myPanel.numberArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY]);
 							System.out.println(bombCount);
-							System.out.println("Bomb? " + myPanel.bombArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY]);
-							
-							myPanel.repaint();
+							System.out.println("Bomb? " + myPanel.bombArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY]);*/
+
 					}
 				}
 			}
 			myPanel.repaint();
 			break;
 		case 3:		//Right mouse button
-			//Do nothing
+			c = e.getComponent();
+			while (!(c instanceof JFrame)) {
+				c = c.getParent();
+				if (c == null) {
+					return;
+				}
+			}
+			myFrame = (JFrame)c;
+			myPanel = (MyPanel) myFrame.getContentPane().getComponent(0);  //Can also loop among components to find MyPanel
+			myInsets = myFrame.getInsets();
+			x1 = myInsets.left;
+			y1 = myInsets.top;
+			e.translatePoint(-x1, -y1);
+			x = e.getX();
+			y = e.getY();
+			myPanel.x = x;
+			myPanel.y = y;
+			gridX = myPanel.getGridX(x, y);
+			gridY = myPanel.getGridY(x, y);
+			
+			System.out.println("right mouse button pressed");
+			myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.RED;
+			myPanel.repaint();
 			break;
 		default:    //Some other button (2 = Middle mouse button, etc.)
 			//Do nothing
