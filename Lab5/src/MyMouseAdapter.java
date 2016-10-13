@@ -5,9 +5,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 public class MyMouseAdapter extends MouseAdapter {
-	int bombCount = 0;
 
 	public void mousePressed(MouseEvent e) {
 		switch (e.getButton())
@@ -92,125 +92,22 @@ public class MyMouseAdapter extends MouseAdapter {
 					if ((myPanel.mouseDownGridX != gridX) || (myPanel.mouseDownGridY != gridY)) {
 						//Released the mouse button on a different cell where it was pressed
 						//Do nothing
-					} else {
+					} else if (!myPanel.lost) {
 						//Released the mouse button on the same cell where it was pressed
-						bombCount = 0;
-
+						myPanel.playing = true;
+						//Player Touched Bomb
 						if (myPanel.bombArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] == 1) {
 							System.out.println("Touched bomb. Game over!");
 							myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.BLACK;
+							myPanel.lost = true;
+							myPanel.repaint();
+							JOptionPane.showMessageDialog(myFrame, "Touched bomb. Game over!");
 						} else {
-							//Determine bomb amount around pressed cell
-							if (myPanel.mouseDownGridX == 0 && myPanel.mouseDownGridY == 8) {
-								System.out.println("touched bottom left cell");
-								for (int xCoord = myPanel.mouseDownGridX; xCoord <= (myPanel.mouseDownGridX + 2); xCoord++) {
-									for (int yCoord = myPanel.mouseDownGridY - 2; yCoord <= (myPanel.mouseDownGridY); yCoord++) {
-										if (myPanel.bombArray[xCoord][yCoord] == 1) {
-											bombCount++;
-										} else {
-											myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
-										}
-									}
-								}
-							} else if (myPanel.mouseDownGridX == 8 && myPanel.mouseDownGridY == 8) {
-								System.out.println("touched bottom right cell");
-								for (int xCoord = myPanel.mouseDownGridX - 2; xCoord <= (myPanel.mouseDownGridX); xCoord++) {
-									for (int yCoord = myPanel.mouseDownGridY - 2; yCoord <= (myPanel.mouseDownGridY); yCoord++) {
-										if (myPanel.bombArray[xCoord][yCoord] == 1) {
-											bombCount++;
-										} else {
-											myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
-										}
-									}
-								}
-							} else if (myPanel.mouseDownGridX == 8 && myPanel.mouseDownGridY == 0) {
-								System.out.println("touched top right cell");
-								for (int xCoord = (myPanel.mouseDownGridX - 2); xCoord <= (myPanel.mouseDownGridX); xCoord++) {
-									for (int yCoord = myPanel.mouseDownGridY; yCoord <= (myPanel.mouseDownGridY + 2); yCoord++) {
-										if (myPanel.bombArray[xCoord][yCoord] == 1) {
-											bombCount++;
-										} else {
-											myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
-										}
-									}
-								}
-							} else if (myPanel.mouseDownGridX == 0 && myPanel.mouseDownGridY == 0) {
-								System.out.println("touched top left cell");
-								for (int xCoord = myPanel.mouseDownGridX; xCoord <= (myPanel.mouseDownGridX + 2); xCoord++) {
-									for (int yCoord = myPanel.mouseDownGridY; yCoord <= (myPanel.mouseDownGridY + 2); yCoord++) {
-										if (myPanel.bombArray[xCoord][yCoord] == 1) {
-											bombCount++;
-										} else {
-											myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
-										}
-									}
-								}
-							}
-							else if (myPanel.mouseDownGridX == 8) {
-								System.out.println("touched right border");
-								for (int xCoord = myPanel.mouseDownGridX - 2; xCoord <= (myPanel.mouseDownGridX); xCoord++) {
-									for (int yCoord = myPanel.mouseDownGridY - 1; yCoord <= (myPanel.mouseDownGridY + 1); yCoord++) {
-										if (myPanel.bombArray[xCoord][yCoord] == 1) {
-											bombCount++;
-										} else {
-											myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
-										}
-									}
-								}
-							} else if (myPanel.mouseDownGridY == 8) {
-								System.out.println("touched bottom border");
-								for (int xCoord = myPanel.mouseDownGridX - 1; xCoord <= (myPanel.mouseDownGridX + 1); xCoord++) {
-									for (int yCoord = (myPanel.mouseDownGridY - 2); yCoord <= (myPanel.mouseDownGridY); yCoord++) {
-										if (myPanel.bombArray[xCoord][yCoord] == 1) {
-											bombCount++;
-										} else {
-											myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
-										}
-									}
-								}
-							} else if (myPanel.mouseDownGridX == 0) {
-								System.out.println("touched left border");
-								for (int xCoord = myPanel.mouseDownGridX; xCoord <= (myPanel.mouseDownGridX + 2); xCoord++) {
-									for (int yCoord = (myPanel.mouseDownGridY -1); yCoord <= (myPanel.mouseDownGridY + 1); yCoord++) {
-										if (myPanel.bombArray[xCoord][yCoord] == 1) {
-											bombCount++;
-										} else {
-											myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
-										}
-									}
-								}
-							} else if (myPanel.mouseDownGridY == 0) {
-								System.out.println("touched top border");
-								for (int xCoord = (myPanel.mouseDownGridX - 1); xCoord <= (myPanel.mouseDownGridX + 1); xCoord++) {
-									for (int yCoord = (myPanel.mouseDownGridY); yCoord <= (myPanel.mouseDownGridY + 2); yCoord++) {
-										if (myPanel.bombArray[xCoord][yCoord] == 1) {
-											bombCount++;
-										} else {
-											myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
-										}
-									}
-								}
-							}
-							else {
-								for (int xCoord = (myPanel.mouseDownGridX - 1); xCoord <= (myPanel.mouseDownGridX + 1); xCoord++) {
-									for (int yCoord = (myPanel.mouseDownGridY - 1); yCoord <= (myPanel.mouseDownGridY + 1); yCoord++) {
-										if (myPanel.bombArray[xCoord][yCoord] == 1) {
-											bombCount++;
-										} else {
-											myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
-										}
-									}
-								}
-							}
-
+							//uncover cell
+							myPanel.recursiveSearch(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
+							myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
 						}
-
-						myPanel.numberArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = bombCount;
 						myPanel.repaint();
-						/*System.out.println("tile bomb number: " + myPanel.numberArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY]);
-							System.out.println(bombCount);
-							System.out.println("Bomb? " + myPanel.bombArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY]);*/
-
 					}
 				}
 			}
@@ -237,7 +134,9 @@ public class MyMouseAdapter extends MouseAdapter {
 			gridX = myPanel.getGridX(x, y);
 			gridY = myPanel.getGridY(x, y);
 
-			System.out.println("right mouse button pressed");
+			System.out.println("cell flagged");
+
+			//paint cell color red
 			myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.RED;
 			myPanel.repaint();
 			break;
