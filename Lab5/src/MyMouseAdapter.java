@@ -134,11 +134,12 @@ public class MyMouseAdapter extends MouseAdapter {
 			gridX = myPanel.getGridX(x, y);
 			gridY = myPanel.getGridY(x, y);
 
-			System.out.println("cell flagged");
-
-			//paint cell color red
-			myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.RED;
-			myPanel.repaint();
+			//paint cell red
+			if (!myPanel.lost) {
+				myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.RED;
+				myPanel.repaint();
+			}
+			
 			break;
 		default:    //Some other button (2 = Middle mouse button, etc.)
 			//Do nothing

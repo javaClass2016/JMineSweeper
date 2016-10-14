@@ -153,6 +153,7 @@ public class MyPanel extends JPanel {
 
 	public MyPanel() {   //This is the constructor... this code runs first to initialize
 
+		
 		if (INNER_CELL_SIZE + (new Random()).nextInt(1) < 1) {	//Use of "random" to prevent unwanted Eclipse warning
 			throw new RuntimeException("INNER_CELL_SIZE must be positive!");
 		}
@@ -200,7 +201,7 @@ public class MyPanel extends JPanel {
 					Color c = colorArray[x][y];
 					g.setColor(c);
 					g.fillRect(x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 1, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 1, INNER_CELL_SIZE, INNER_CELL_SIZE);
-					if (lost) {
+					if (lost) { //manage when user looses
 						if (bombArray[x][y] == 1){
 							g.setColor(Color.BLACK);
 							g.fillRect(x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 1, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 1, INNER_CELL_SIZE, INNER_CELL_SIZE);
@@ -208,16 +209,16 @@ public class MyPanel extends JPanel {
 							g.setColor(Color.WHITE);
 							g.drawString(numberArray[x][y]+"", x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 11, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 20);
 						}
-					} else {
+					} else { //manage everything else
 						if (numberArray[x][y] == 0) {
 							g.setColor(Color.WHITE);
 							g.drawString("", x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 11, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 20);
-						}
-						else {
+						} else if (colorArray[x][y].equals(Color.RED)) {
+							// do nothing
+						} else {
 							g.setColor(Color.WHITE);
 							g.drawString(numberArray[x][y]+"", x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 11, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 20);
 						}
-
 					}
 
 				}
